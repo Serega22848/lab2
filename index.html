@@ -171,27 +171,39 @@
                 const repeatOptions = ["false" ,"false" ,"false"];
   
                 // Створюємо масив для всіх маркерів
-                const markerRoots = [];
-                for (let i = 0; i < 3; i++) {
-                    markerRoots[i] = new THREE.Group();
-                }
-  
-                // Проходимо по кожному маркеру з масиву і додаємо його в головний контейнер
-                for (let i = 0; i < 3; i++) {
-                    mainContainer.add(markerRoots[i]);
-
-                    // Якщо поточний маркер – це баркод, створюємо AR контролер під баркод
-                    // якщо поточний маркер це патерн, аналогічно створюємо AR контролер під патерн
-                    if (patternBarcode[i] === -1) {
-                        let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoots[i], {
-                            type: 'pattern', patternUrl: patternNames[i], size: 1 + (i + 1) / patternIdOffset
-                        })
-                        patternsID.push(patternNames[i]);
-                    } else {
-                        let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoots[i], {
-                            type: "barcode", barcodeValue: patternBarcode[i],
-                        })
-                        barcodesID.push(patternBarcode[i]);
+                                   
+                    const markerRoots = [];
+                    for (let i = 0; i < 3; i++) {
+                        markerRoots[i] = new THREE.Group();
+                    }
+                    
+                    for (let i = 0; i < 3; i++) {
+                        mainContainer.add(markerRoots[i]);
+                    
+                        // Якщо поточний маркер – це баркод, створюємо AR контролер під баркод
+                        // якщо поточний маркер це патерн, аналогічно створюємо AR контролер під патерн
+                        if (patternBarcode[i] === -1) {
+                            console.log(`Loading pattern: ${patternNames[i]}`); // Logging pattern being loaded
+                            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoots[i], {
+                                type: 'pattern', 
+                                patternUrl: patternNames[i], 
+                                size: 1 + (i + 1) / patternIdOffset,
+                                onError: (error) => {
+                                    console.error(`Error loading pattern ${patternNames[i]}:`, error); // Error handling
+                                }
+                            });
+                            patternsID.push(patternNames[i]);
+                        } else {
+                            console.log(`Loading barcode: ${patternBarcode[i]}`); // Logging barcode being loaded
+                            let markerControls1 = new THREEx.ArMarkerControls(arToolkitContext, markerRoots[i], {
+                                type: "barcode", 
+                                barcodeValue: patternBarcode[i],
+                                onError: (error) => {
+                                    console.error(`Error loading barcode ${patternBarcode[i]}:`, error); // Error handling
+                                }
+                            });
+                            barcodesID.push(patternBarcode[i]);
+                        }
                     }
 
                     // Використовуємо switch для роботи з кожним окремим випадком контенту
